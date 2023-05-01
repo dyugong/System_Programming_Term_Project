@@ -25,4 +25,8 @@
 <li>$(pgrep ls) -> 어떻게 없앨지</li>
 <li>interval은 입력을 받을건지, 임의로 설정할 것인지?</li>
 </ul>
+<h2>Progress</h2>
+<ul>
+<li>ls 정적이게 strace한번, pidstat 한번 출력</li>
+</ul>
 </body>
