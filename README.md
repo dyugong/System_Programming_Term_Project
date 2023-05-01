@@ -19,4 +19,10 @@
 <li>ls(execution file name) 결과</li>
 <li>옵션 추가 (-p)</li>
 </ul>
+<h2>Problem</h2>
+<ul>
+<li>ls & -> 어떻게 없앨지</li>
+<li>$(pgrep ls) -> 어떻게 없앨지</li>
+<li>interval은 입력을 받을건지, 임의로 설정할 것인지?</li>
+</ul>
 </body>
