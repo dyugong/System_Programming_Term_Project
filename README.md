@@ -17,6 +17,6 @@
 <li>command</li>
 <li>path, dirname</li>
 <li>ls(execution file name) 결과</li>
-<li>옵션 추가 (-</li>
+<li>옵션 추가 (-p)</li>
 </ul>
 </body>
