@@ -22,7 +22,7 @@
 <h2>Problem</h2>
 <ul>
 <li>ls & -> 어떻게 없앨지</li>
-<li>$(pgrep ls) -> 어떻게 없앨지</li>
+<li>$(pgrep ls) -> 어떻게 없앨지</li> ->execvp 등을 이용해 해결
 <li>interval은 입력을 받을건지, 임의로 설정할 것인지?</li>
 </ul>
 <h2>Progress</h2>
