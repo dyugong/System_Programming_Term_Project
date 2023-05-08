@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 		{ // 부모 프로세스
             int status;
             pid_t child_pid = waitpid(pid, &status, 0); // 자식 프로세스의 종료 상태 읽기 
-            // waitpid()실행 후, 3번째 인자에, 종료된 자식 프로세스의 정보가 저장이 됨. by. 구글
+            // waitpid()실행 후, status 인자에, 종료된 자식 프로세스의 상태정보가 저장이 됨. by. 구글
             if (child_pid < 0)
 			{ // waitpid 실패
                 fprintf(stderr, "waitpid failed\n");
