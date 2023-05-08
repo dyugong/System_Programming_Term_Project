@@ -69,16 +69,6 @@ void function(char* dirname)
 
 }
 
-passwd* uid_uid(uid_t uid)             // UID를 기반으로 정보 읽어오리
-{
-	return getpwuid(uid);
-}
-
-passwd* gid_gid(gid_t gid)             // GID를 기반으로 정보 읽어오기
-{
-	return getgrgid(gid);
-}
-
 int main(int argc, char* argv[])
 {
 	char* arglist[3];                  // 인자의 내용을 저장하는 문자열
