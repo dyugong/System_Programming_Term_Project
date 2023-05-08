@@ -1,0 +1,54 @@
+`/proc/pid/stat` 파일은 공백으로 구분된 52개의 필드로 이루어져 있습니다. 각 필드는 프로세스의 다양한 정보를 나타냅니다. 아래는 필드의 간단한 설명입니다.
+
+1. pid: 프로세스 ID
+2. comm: 실행 파일의 이름
+3. state: 현재 프로세스 상태 (e.g. running, sleeping)
+4. ppid: 부모 프로세스 ID
+5. pgrp: 프로세스 그룹 ID
+6. session: 세션 ID
+7. tty_nr: 제어 터미널의 번호
+8. tpgid: 프로세스 그룹 ID
+9. flags: 프로세스 플래그 (e.g. 사용자 모드, 시그널 블록)
+10. minflt: 소프트 페이지 부재 (minor faults) 수
+11. cminflt: 자식 프로세스의 소프트 페이지 부재 수
+12. majflt: 하드 페이지 부재 (major faults) 수
+13. cmajflt: 자식 프로세스의 하드 페이지 부재 수
+14. utime: 사용자 모드에서 소비한 CPU 시간
+15. stime: 시스템 모드에서 소비한 CPU 시간
+16. cutime: 자식 프로세스들이 사용자 모드에서 소비한 CPU 시간
+17. cstime: 자식 프로세스들이 시스템 모드에서 소비한 CPU 시간
+18. priority: 프로세스 스케줄링 우선순위
+19. nice: 프로세스 nice 값
+20. num_threads: 스레드 수
+21. itrealvalue: 프로세스가 SIGALRM 타이머를 설정할 때 사용하는 값
+22. starttime: 프로세스 시작 시간 (시스템 부팅 이후 CPU 클럭 틱 수)
+23. vsize: 가상 메모리 크기
+24. rss: 주 기억장치 상주 집합 크기 (Resident Set Size)
+25. rsslim: 주 기억장치 상주 집합 크기 제한
+26. startcode: 실행 코드의 시작 주소
+27. endcode: 실행 코드의 끝 주소
+28. startstack: 스택의 시작 주소
+29. kstkesp: 커널 스택의 현재 위치
+30. kstkeip: 커널에서 실행중인 함수의 주소
+31. signal: 보류 중인 시그널 비트맵
+32. blocked: 차단된 시그널 비트맵
+33. sigignore: 무시되는 시그널 비트맵
+34. sigcatch: 처리되는 시그널 비트맵
+35. wchan: 프로세스가 대기하고 있는 커널함수나 시스템 콜의 이름
+36. nswap: 스왑 아웃된 페이지 수
+37. cnswap: 자식 프로세스의 스왑 아웃된 페이지 수
+38. exit_signal: 프로세스가 종료될 때 보내는 시그널 번호
+39. processor: 프로세서 번호
+40. rt_priority: 실시간 우선순위
+41. policy: 스케줄링 정책
+42. delayacct_blkio_ticks: 블록 I/O 작업 지연 시간
+43. guest_time: 가상 CPU 시간 (하이퍼바이저에서 소비한)
+44. cguest_time: 자식 프로세스의 가상 CPU 시간 (하이퍼바이저에서 소비한)
+45. start_data: 초기화 된 데이터의 시작 주소
+46. end_data: 초기화 된 데이터의 끝 주소
+47. start_brk: 힙 세그먼트의 시작 주소
+48. arg_start: 명령줄 인수의 시작 주소
+49. arg_end: 명령줄 인수의 끝 주소
+50. env_start: 환경 변수의 시작 주소
+51. env_end: 환경 변수의 끝 주소
+52. exit_code: 프로세스가 종료될 때 반환하는 상태 코드
