@@ -8,38 +8,77 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 
-
-int main(int argc, char* argv[])
+void fatal(char* s1, char* s2, int n)
 {
-   pid_t pid;
-   int status;
-   struct rusage usage;
-   
-   pid = fork(); // 자식 프로세스 생성
-   
+    /*
+        purpose: print out error and terminate
+    */
+    fprintf(stderr, "Error: %s, %s\n", s1, s2);
+    exit(n);
+}
 
-   if (pid < 0)
-   { // fork 실패
-      fprintf(stderr, "fork failed\n");
+// extended malloc
+void* emalloc(size_t n) {
+    void* rv = (void*)malloc(n);
+    if (rv == NULL) {
+        fatal("out of memory", "", 1);
+    }
+    return rv;
+}
+
+void* erealloc(void* p, size_t n) {
+    void* rv = realloc(p, n);
+    if (rv == NULL) {
+        fatal("realloc() failed", "", 1);
+    }
+    return rv;
+}
+
+void freelist(char** list) {
+    char** cp = list;
+    while (*cp) {
+        free(*cp++);
+    }
+    free(list);
+}
+
+int main(int argc, char *argv[]) {
+    int status;
+    struct rusage usage;
+    
+    int pid, argnum;  // 현재 프로세스의 PID를 가져옴
+    char** arglist;
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s", argv[0]);
         exit(1);
-   } 
-   else if (pid == 0)
-   { // 자식 프로세스    
-      execvp(argv[0], argv);
-      exit(0);
-    } 
-   else
-   { // 부모 프로세스
-      wait(&status);
-      if (getrusage(pid, &usage) == -1) 
-      {
-         perror("getrusage");
-         exit(1);
-      }
-
-   }
-   printf("maxrss  ixrss  idrss  isrss  inblock  outblock  command\n");
-   printf("%ld  %ld  %ld  %ld  %ld  %ld  %s\n", usage.ru_maxrss, usage.ru_ixrss, usage.ru_idrss, usage.ru_isrss, usage.ru_inblock, usage.ru_oublock, argv[0]);
+    }
+    arglist = emalloc(BUFSIZ * argc);
+    for (argnum = 0; argnum < argc; argnum++) {
+        arglist[argnum] = argv[argnum + 1];
+    }
+    arglist[argnum] = NULL;
 
 
+    if ((pid = fork()) == -1)
+        perror("fork");
+    else if (pid == 0) {
+        execvp(arglist[0], arglist);
+        perror("unexecutable command");
+        exit(1);
+    }
+    else {
+         // 부모 프로세스
+            if (getrusage(pid, &usage) == -1)
+            {
+                perror("getrusage");
+                exit(1);
+            }
+            wait(&status);
+
+    }
+    printf("maxrss  ixrss  idrss  isrss  inblock  outblock  command\n");
+    printf("%ld  %ld  %ld  %ld  %ld  %ld  %s\n", usage.ru_maxrss, usage.ru_ixrss, usage.ru_idrss, usage.ru_isrss, usage.ru_inblock, usage.ru_oublock, argv[0]);
+    
+    freelist(arglist);
+    return 0;
 }
