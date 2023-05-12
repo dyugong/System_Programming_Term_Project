@@ -68,17 +68,16 @@ int main(int argc, char *argv[]) {
     }
     else {
          // 부모 프로세스
-            if (getrusage(pid, &usage) == -1)
+            waitpid(pid, &status, 0);
+            if (getrusage(RUSAGE_CHILDREN, &usage) == -1)
             {
                 perror("getrusage");
                 exit(1);
             }
-            wait(&status);
-
     }
     printf("maxrss  ixrss  idrss  isrss  inblock  outblock  command\n");
-    printf("%ld  %ld  %ld  %ld  %ld  %ld  %s\n", usage.ru_maxrss, usage.ru_ixrss, usage.ru_idrss, usage.ru_isrss, usage.ru_inblock, usage.ru_oublock, argv[0]);
-    
-    freelist(arglist);
+    printf("%ld  %ld  %ld  %ld  %ld  %ld  %s\n", usage.ru_maxrss, usage.ru_ixrss, usage.ru_idrss, usage.ru_isrss, usage.ru_inblock, usage.ru_oublock, argv[1]);
+
+    free(arglist);
     return 0;
 }
