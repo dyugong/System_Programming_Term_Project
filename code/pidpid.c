@@ -3,9 +3,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/times.h>
+#include <sys/resource.h>
 
 int main(int argc, char* argv[])
 {
+    struct rusage usage;
     pid_t pid = fork();
 
     if (pid < 0) {
@@ -19,7 +22,6 @@ int main(int argc, char* argv[])
     } else {
         // 부모 프로세스에서 자식 프로세스의 정보 출력
         int status;
-
         // 자식 프로세스의 정보 가져오기
         char stat_path[32];
         sprintf(stat_path, "/proc/%d/stat", pid);
@@ -29,24 +31,21 @@ int main(int argc, char* argv[])
             perror("fopen");
             exit(1);
         }
+	
 	waitpid(pid, &status, 0);
-        unsigned long utime, stime, cutime, cstime;
-        fscanf(stat_file, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %lu %lu %lu %lu", &utime, &stime, &cutime, &cstime);
+        unsigned long cutime, cstime;
+        fscanf(stat_file, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*d %*d %lu %lu", &cutime, &cstime);
         fclose(stat_file);
-
-        double usr_time = utime / (double)sysconf(_SC_CLK_TCK);
-        double sys_time = stime / (double)sysconf(_SC_CLK_TCK);
+	getrusage(RUSAGE_CHILDREN, &usage);
         double guest_time = (cutime + cstime) / (double)sysconf(_SC_CLK_TCK);
-
-        // 출력
-        printf("Execution Time: %.6f seconds\n", usr_time + sys_time);
+	guest_time = 0;        
+	// 출력
         printf("UID: %d\n", getuid());
         printf("PID: %d\n", pid);
-        printf("USR: %.6f\n", usr_time);
-        printf("System: %.6f\n", sys_time);
-        printf("Guest: %.6f\n", guest_time);
-        printf("Wait: 0.000000\n");
-        printf("CPU: %.6f\n", usr_time + sys_time + guest_time);
+        printf("USR: %ld.%06ld s\n", usage.ru_utime.tv_sec, usage.ru_utime.tv_usec);
+        printf("System:  %ld.%06ld s\n", usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
+        printf("Guest: %.6f s\n", guest_time);
+        printf("CPU: %ld.%06ld s\n", (usage.ru_utime.tv_sec + usage.ru_stime.tv_sec), (usage.ru_utime.tv_usec + usage.ru_stime.tv_usec));
 
         exit(0);
     }
