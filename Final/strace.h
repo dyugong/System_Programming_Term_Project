@@ -8,10 +8,10 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-void stexecute(int argc, char** argv);
+void stexecute(int, char**);
 // ptrace attach to child
-void child(char** argv);
+void child(int, char**);
 // do like gdb
-void parent(pid_t pid);
+void parent(pid_t);
 void detach();
-char* syscalltostring(long id);
+char* syscalltostring(long);

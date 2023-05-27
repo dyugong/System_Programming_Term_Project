@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/times.h>
-#include <sys/resource.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
+#include "pidstat.h"
 
 #define BUFFERSIZE 4096
 
@@ -18,6 +8,23 @@ void sighandler(int signum)
 {
     flag = 1;
     printf("Do you want to stop?\n");
+}
+
+void setsignal(struct sigaction newhandler, sigset_t blocked)
+{
+    newhandler.sa_handler = sighandler;
+    newhandler.sa_flags = SA_RESTART;
+
+    sigemptyset(&blocked);
+    sigaddset(&blocked, SIGQUIT);
+
+    newhandler.sa_mask = blocked;
+
+    if (sigaction(SIGINT, &newhandler, NULL) == -1)
+    {
+        perror("sigaction\n");
+    }
+    flag = 1;
 }
 
 ssize_t readline(int fd, void* buffer, size_t n) {
@@ -74,28 +81,8 @@ long long printMemoryUsage(int pid) {
     return memUsage;
 }
 
-int main(int argc, char** argv) {
+int pidstat(int argc, char** argv) {
 
-    if (argc >= 3 && strcmp(argv[1], "-r") == 0)
-    {
-        struct sigaction newhandler;
-        sigset_t blocked;
-        void sighandler();
-
-        newhandler.sa_handler = sighandler;
-        newhandler.sa_flags = SA_RESTART;
-
-        sigemptyset(&blocked);
-        sigaddset(&blocked, SIGQUIT);
-
-        newhandler.sa_mask = blocked;
-
-        if (sigaction(SIGINT, &newhandler, NULL) == -1)
-        {
-            perror("sigaction\n");
-        }
-        flag = 1;
-    }
     struct rusage usage;
     int status = 0;
     int pid = fork();
@@ -126,7 +113,7 @@ int main(int argc, char** argv) {
     long long ttmp = printMemoryUsage(pid);
     waitpid(pid, &status, 0);
 
-   
+
 
     if (argc >= 3 && strcmp(argv[1], "-r") == 0)
     {
@@ -196,32 +183,4 @@ int main(int argc, char** argv) {
 
     return 0;
 
-   /*
-    int pid, argnum;  // 현재 프로세스의 PID를 가져옴
-    char** arglist;
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s", argv[0]);
-        exit(1);
-    }
-    arglist = emalloc(BUFSIZ * argc);
-    for (argnum = 0; argnum < argc; argnum++) {
-        arglist[argnum] = argv[argnum + 1];
-    }
-    arglist[argnum] = NULL;
-
-
-    if ((pid = fork()) == -1)
-        perror("fork");
-    else if (pid == 0) {
-        execvp(arglist[0], arglist);
-    }
-    else {
-        printCpuUsage(pid);
-        printMemoryUsage(pid);
-        wait(NULL);
-    }
-
-
-    return 0;
-   */
 }

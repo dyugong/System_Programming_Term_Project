@@ -1,4 +1,5 @@
 #include "strace.h"
+#include "pidstat.h"
 
 #define oops(msg) { perror(msg); exit(1); }
 
@@ -10,6 +11,7 @@ int* errnor;
 double* ptime;
 int count = 1;
 
+int flag;
 pid_t pid;
 char buffer[256];
 
@@ -21,35 +23,16 @@ void stexecute(int argc, char** argv)
         printf("\t%s EXECUTABLE [arg1] ... [argn]\n", argv[0]);
         printf("\t%s -p PID\n", argv[0]);
     }
-    else if (strcmp(argv[1], "-p") == 0)
-    {
-        if (argc != 3 || atoi(argv[2]) <= 0)
-        {
-            printf("Missing or invalid pid.\n");
-        }
-        else
-        {
-            call = (long*)malloc(sizeof(long) * 400);
-            errnor = (int*)malloc(sizeof(int) * 400);
-            for (int i = 0; i < 400; i++) {
-                errnor[i] = 0;
-                call[i] = 0;
-            }
-            pid = (pid_t)atoi(argv[2]);
-
-            if (ptrace(PTRACE_ATTACH, pid, 0, 0) < 0)
-                oops("PTRACE_ATTACH");
-
-            printf("strace: Process %d attached\n", pid);
-
-            signal(SIGTERM, detach);
-            signal(SIGINT, detach);
-
-            parent(pid);
-        }
-    }
     else
     {
+        if (argc >= 3 && strcmp(argv[1], "-r") == 0)
+        {
+            struct sigaction newhandler;
+            sigset_t blocked;
+            void sighandler();
+            setsignal(newhandler, blocked);
+
+        }
         call = (long*)malloc(sizeof(long) * 400);
         errnor = (int*)malloc(sizeof(int) * 400);
         ptime = (double*)malloc(sizeof(double) * 400);
@@ -62,13 +45,22 @@ void stexecute(int argc, char** argv)
             oops("fork");
         }
         else if (pid == 0)
-            child(argv + 1);
+        {
+            if (argc >= 3 && strcmp(argv[1], "-r") == 0)
+            {
+                child(argc, argv + 2);
+            }
+            else
+            {
+                child(argc, argv + 1);
+            }
+        }
         else
             parent(pid);
     }
 }
 
-void child(char** argv)
+void child(int argc, char** argv)
 {
     if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0)
         oops("ptrace()");
@@ -98,7 +90,7 @@ void parent(pid_t pid)
             printf("------ ----------- ----------- --------- --------- ----------------\n");
             for (int i = 0; i < 400; i++) {
                 if (call[i] != 0) {
-                    if(errnor[i])
+                    if (errnor[i])
                         printf("%6.2f %11f %11d %9ld %9d %s\n", ptime[i] / totaltime * 100, ptime[i], (int)(ptime[i] * 1000000) / (int)call[i], call[i], errnor[i], syscalltostring(i));
                     else
                         printf("%6.2f %11f %11d %9ld %9s %s\n", ptime[i] / totaltime * 100, ptime[i], (int)(ptime[i] * 1000000) / (int)call[i], call[i], " ", syscalltostring(i));
@@ -114,7 +106,7 @@ void parent(pid_t pid)
 
         if (resp == 0)
         {
-            
+
         }
         // 시스템 호출이 실패했거나 오류가 발생했을때 음수 값을 return
         // return값이 -38일때 'ENOSYS'(Function not implemented)라는 오류
@@ -123,7 +115,7 @@ void parent(pid_t pid)
             resp = 1;
             call[(int)regs.orig_rax] += 1;
             totalcall += 1;
-                     
+
         }
         else
         {
