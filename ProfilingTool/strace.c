@@ -8,9 +8,7 @@ long totalcall = 0;
 long* call;
 int* errnor;
 double* ptime;
-int count = 1;
 
-int flag;
 pid_t pid;
 char buffer[256];
 
@@ -20,7 +18,6 @@ void strace(int argc, char** argv)
     {
         printf("Usage:\n");
         printf("\t%s EXECUTABLE [arg1] ... [argn]\n", argv[0]);
-        printf("\t%s -p PID\n", argv[0]);
     }
     else
     {
@@ -35,16 +32,8 @@ void strace(int argc, char** argv)
         if ((pid = fork()) < 0) {
             oops("fork");
         }
-        else if (pid == 0)
-        {
-            if (argc >= 3 && strcmp(argv[1], "-r") == 0)
-            {
-                child(argc, argv + 2);
-            }
-            else
-            {
-                child(argc, argv + 1);
-            }
+        else if (pid == 0) {
+            child(argc, argv + 1);
         }
         else
             parent(pid);
@@ -65,7 +54,7 @@ void parent(pid_t pid)
     FILE* fp;
     fp = fopen("strace.txt", "w");
     if (fp == NULL) {
-        perror("ÆÄÀÏ ¿­±â ½ÇÆĞ");
+        perror("íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨");
         exit(EXIT_FAILURE);
     }
     int status, resp = 0;
@@ -78,7 +67,7 @@ void parent(pid_t pid)
         if (waitpid(pid, &status, 0) == -1)
             oops("waitpid()");
 
-        // ½ÃÀÛ ½Ã°£ ±â·Ï
+        // ì‹œì‘ ì‹œê°„ ê¸°ë¡
         gettimeofday(&start, NULL);
 
 
@@ -115,21 +104,14 @@ void parent(pid_t pid)
         if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)
             oops("PTRACE_GETREGS");
 
-        if (resp == 0)
-        {
-
-        }
-        // ½Ã½ºÅÛ È£ÃâÀÌ ½ÇÆĞÇß°Å³ª ¿À·ù°¡ ¹ß»ıÇßÀ»¶§ À½¼ö °ªÀ» return
-        // return°ªÀÌ -38ÀÏ¶§ 'ENOSYS'(Function not implemented)¶ó´Â ¿À·ù
-        if ((long)regs.rax == -38)
-        {
+        // ì‹œìŠ¤í…œ í˜¸ì¶œì´ ì‹¤íŒ¨í–ˆê±°ë‚˜ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆì„ë•Œ ìŒìˆ˜ ê°’ì„ return
+        // returnê°’ì´ -38ì¼ë•Œ 'ENOSYS'(Function not implemented)ë¼ëŠ” ì˜¤ë¥˜
+        if ((long)regs.rax == -38) {
             resp = 1;
             call[(int)regs.orig_rax] += 1;
             totalcall += 1;
-
         }
-        else
-        {
+        else {
             long code = (long)regs.rax;
             if (code < 0)
                 code++;
@@ -140,9 +122,9 @@ void parent(pid_t pid)
             }
             resp = 0;
         }
-        // Á¾·á ½Ã°£ ±â·Ï
+        // ì¢…ë£Œ ì‹œê°„ ê¸°ë¡
         gettimeofday(&end, NULL);
-        // ½ÇÇà ½Ã°£ °è»ê (¸¶ÀÌÅ©·ÎÃÊ ´ÜÀ§)
+        // ì‹¤í–‰ ì‹œê°„ ê³„ì‚° (ë§ˆì´í¬ë¡œì´ˆ ë‹¨ìœ„)
         elapsed_us = (end.tv_sec - start.tv_sec) + (double)(end.tv_usec - start.tv_usec) / 1000000;
         ptime[(int)regs.orig_rax] += elapsed_us;
         totaltime += elapsed_us;
