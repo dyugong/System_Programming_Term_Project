@@ -10,7 +10,6 @@
 #include <string.h>
 #include <fcntl.h>
 
-void sighandler(int);
 ssize_t readline(int, void*, size_t);
 long long printMemoryUsage(int);
 int pidstat(int, char**);
