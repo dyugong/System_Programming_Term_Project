@@ -28,19 +28,21 @@ ssize_t readline(int fd, void* buffer, size_t n) {
 
 // PID를 입력받아 메모리 사용량을 출력하는 함수
 long long printMemoryUsage(int pid) {
-    char statusFilePath[50];
-    sprintf(statusFilePath, "/proc/%d/status", pid);
+    char statusFilePath[50];                            // Procfile에 접근하여 Path 저장하기 위한 배열
+    sprintf(statusFilePath, "/proc/%d/status", pid);    // PID에 대한 status Path를 statusFilePaht에 저장
 
-    int in_fd, n_read;
-    char line[100];
-    unsigned long memUsage;
+    int in_fd, n_read;          // 
+    char line[100];             // like buffer
+    unsigned long memUsage;     // memory 사용값을 반환하기 위한 함수
 
     if ((in_fd = open(statusFilePath, O_RDONLY)) == -1) {
         perror("open");
         exit(1);
     }
     while ((n_read = readline(in_fd, line, sizeof(line))) > 0) {
+        // size of memory portions
         if (strncmp(line, "VmRSS:", 6) == 0) {
+            // 읽어온 line에서 memory값 추출
             sscanf(line, "%*s %lu", &memUsage);
             break;
         }
