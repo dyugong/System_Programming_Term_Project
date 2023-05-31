@@ -11,8 +11,6 @@
 #include <signal.h>
 
 void strace(int, char**);
-// ptrace attach to child
 void child(int, char**);
-// do like gdb
 void parent(pid_t);
 char* syscalltostring(long);
