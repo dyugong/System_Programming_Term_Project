@@ -1,0 +1,60 @@
+
+user_regs_struct
+프로세스의 레지스터 값을 저장하는 데 사용되는 구조체
+시스템 호출 또는 예외 처리와 같은 작업을 수행하는 동안, "프로세스"의 레지스터 상태를
+추적하고 보존하는데 사용 -> 주로 디버깅 및 프로파일링 도구, 즉, 프로세스의 현재 레지스터 값을
+검사하거나 변경해야 하는 경우에 유용
+
+일반적으로 포함하고 있는 멤버 변수
+unsigned long int 
+r15, r14, r13, r12, r11, r10, r9, r8, rbp, rbx
+rax, rcx, rdx, rsi ,rdi
+orig_rax, rip, cs, eflags, rsp, ss, fs_base, gs_base, ds, es, fs, gs
+위의 변수들은, 명령어 포인터, 스택 포인터, 베이스 포인터 및 일반 목적 레지스터와 같은 기능
+orig_rax : 시스템 콜이나 시그널 핸들링 중 원래의 시스템 콜 번호를 저장, 호출이 끝나면 결과값 저장
+rip 현재 명령어의 주소 저장, 다음에 실행할 명령어의 위치를 가리킴: 
+cs : 현재 코드 세그먼트의 선택자를 저장, 코드 세그먼트: 프로세스의 실행 코드가 있는 메모리 영역
+eflags : 프로세스의 상태 및 제어 플래그 저장
+rsp : 스택의 현재 위치를 가리키는 스택포인터(지역 변수, 함수 호출 및 복귀주소 저장)
+ss : 스택 세그먼트의 선택자를 저장
+fs_base, gs_base : 세그먼트의 베이스 주소 저장
+ds, es, fs, gs : 데이터 세그먼트의 선택자를 저장
+
+unsingned long int
+err : 예외 처리 중 발생한 오류 코드를 저장
+trapno : 예외 처리 중 발생한 트랩 번호를 저장
+oldmask : 예외 처리 중 이전의 시그널 마스크 값을 저장
+
+
+-------------------------------------------------------------------------------------
+
+우리 메이크파일 설명
+
+profile이라는 실행 파일을 빌드하는데 사용되는 규칙과 의존성 정의
+clean이라는 규칙을 통해 중간 파일을 삭제하는 명령 제공
+
+.PHONY : clean을 실제 파일 이름으로 간주하지않고, 항상 실행해야 함을 의미
+-> make clean을 할 때, clean이 실행하는 것을 보장
+
+RM = rm -f : RM변수에 rm -f명령을 할당하여 중간 파일을 삭제하게 함
+
+profile: profile.o strace.o pidstat.o
+: profile 타겟은 profile.o, strace.o, pidstat.o 파일들을 의존성으로 가짐
+이 파일들이 변경되었을 경우에만 profile 타겟을 빌드
+profile 타겟은 gcc 명령을 사용하여 profile.o, strace.o, pidstat.o 파일들을 링크하여
+profile실행 파일을 생성
+
+profile.o: profile.c strace.h pidstat.h 파일들을 의존성으로 가짐
+이 파일들이 변경되었을 경우에만 profile.o 타겟을 빌드
+profile.o 타겟은 gcc 명령을 사용하여 profile.c 파일을 컴파일 하여 profile.o 오브젝트 파일을 생성
+
+strace.o: strace.c strace.h: strace.o 타겟은 strace.c, strace.h 파일들을 의존성으로 가짐
+ 이 파일들이 변경되었을 경우에만 "strace.o" 타겟을 빌드
+strace.o 타겟은 gcc 명령을 사용하여 strace.c 파일을 컴파일하여 strace.o 오브젝트 파일을 생성
+
+pidstat.o: pidstat.c pidstat.h: pidstat.o 타겟은 pidstat.c, pidstat.h 파일들을 의존성으로 가짐
+이 파일들이 변경되었을 경우에만 "pidstat.o" 타겟을 빌드
+pidstat.o 타겟은 gcc 명령을 사용하여 pidstat.c 파일을 컴파일하여 pidstat.o 오브젝트 파일을 생성
+
+clean: clean 타겟은 중간 파일인 *.o 파일들을 삭제하는 명령을 수행
+$(RM)을 사용하여 RM 변수에 할당된 명령 rm -f을실행하여 파일들을 삭제
