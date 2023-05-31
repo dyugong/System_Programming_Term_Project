@@ -2,7 +2,8 @@
 <h2>
   <ul>
   <li>Strace</li>
-    dfjslfsdf
+    <h4>strace -c command in linux</h4>
   <li>Pidstat</li>
+    <h4>Cpu and Memory Usage
  </ul>
 </h2>
