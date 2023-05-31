@@ -9,7 +9,6 @@ long* call;
 int* errnor;
 double* ptime;
 
-int flag;
 pid_t pid;
 char buffer[256];
 
@@ -107,8 +106,8 @@ void parent(pid_t pid)
 
         if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)            // 레지스터 값을 regs에 받아옴
             oops("PTRACE_GETREGS");
-
-        // return값이 -38일때 'ENOSYS'(Function not implemented)라는 오류
+ 
+        // 시스템 콜 탐색 성공 시 rax의 초기값 -38
         if ((long)regs.rax == -38)
         {
             call[(int)regs.orig_rax] += 1;
