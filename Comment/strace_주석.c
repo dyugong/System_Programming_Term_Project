@@ -2,10 +2,10 @@
 
 #define oops(msg) { perror(msg); exit(1); }
 
-double totaltime = 0;
-int totalerror = 0;
-long totalcall = 0;
-long* call;
+double totaltime = 0;     // 총 실행 시간
+int totalerror = 0;       // 총 에러 횟수
+long totalcall = 0;       // 총 시스템 콜 횟수
+long* call;             
 int* errnor;
 double* ptime;
 
@@ -19,7 +19,6 @@ void strace(int argc, char** argv)
     {
         printf("Usage:\n");
         printf("\t%s EXECUTABLE [arg1] ... [argn]\n", argv[0]);
-        printf("\t%s -p PID\n", argv[0]);
     }
     else
     {
@@ -69,7 +68,7 @@ void parent(pid_t pid)
 
     while (1)
     {
-        if (waitpid(pid, &status, 0) == -1)       // 자식 프로세스의 종료를 기다림
+        if (waitpid(pid, &status, 0) == -1)       // 자식 프로세스의 종료(시그널)를 기다림
             oops("waitpid()");
 
         // 시작 시간 기록
@@ -109,13 +108,11 @@ void parent(pid_t pid)
         if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)            // 레지스터 값을 regs에 받아옴
             oops("PTRACE_GETREGS");
 
-        // 시스템 호출이 실패했거나 오류가 발생했을때 음수 값을 return
         // return값이 -38일때 'ENOSYS'(Function not implemented)라는 오류
         if ((long)regs.rax == -38)
         {
             call[(int)regs.orig_rax] += 1;
             totalcall += 1;
-
         }
         else
         {
@@ -136,7 +133,6 @@ void parent(pid_t pid)
         totaltime += elapsed_us;
         if (ptrace(PTRACE_SYSCALL, pid, 0, 0) == -1)            // 다음 시스템콜 추적
             oops("PTRACE_SYSCALL");
-    }
 }
 
 char* syscalltostring(long id)         // 시스템 콜 번호 -> 시스템콜(문자열)
