@@ -1,0 +1,48 @@
+Profile.c
+※pipe -> file 2개 내용 1개로 합치기
+
+1. child
+strace함수 & pidstat 함수 -> 결과값 출력 및 각각 txt 파일에 저장
+pipe reading end 닫음 -> make a writing end stdout(출력값 부모로 보냄)
+각 txt 파일 열어서 내용 출력 -> 출력값 부모로 보냄
+
+2. parent
+child로 부터 받은 출력값(strace와 pidstat의 결과)을 result.txt에 담음
+이 과정에서 
+creat-> result.txt 생성과 동시에 open
+write -> result.txt에 child로 부터 받은 출력값 씀
+close -> result.txt 닫기
+------------------------------------------------------------------------------
+Pidstat
+Memory 함수
+proc/pid/status
+proc파일에서 pid의 status에 해당하는 부분의 path를 받아옴
+ㄴ이 부분에 process의 memory와 관련된 내용이 들어있음
+
+VMRSS
+size of memory portions
+스왑되지 않고 설정된 사이즈  (/proc/[pid]/status 에 있는 VmRSS와 같은값)
+
+------------------------------------------------------------------------------
+Strace
+
+ptrace(PTRACE_TRACEME, 0, NULL, NULL)
+현재 프로세스를 추적 대상으로 설정합니다. 자신의 프로세스를 추적하게 됩니다.
+
+ptrace(PTRACE_GETREGS, pid, 0, &regs)
+추적 중인 프로세스의 레지스터 값을 읽어옵니다.
+user_regs_struct regs
+regs 레지스터에 저장된 정보를 가져옴
+ㄴregs.rax -> 
+ㄴregs.orig_rax -> syscall table 인덱스 번호
+
+ptrace(PTRACE_SYSCALL, pid, 0, 0)
+다음 시스템 콜 진입 시점에서 멈추도록 설정합니다.
+
+gettimeofday
+struct timeval {
+    time_t      tv_sec;     /* 초 */
+    suseconds_t tv_usec;    /* 마이크로초 */
+};
+start와 end를 정해 end에서 start를 뺀 값을 저장하여 시간 측정(소수점 6자리까지 측정)
+strace에서 소수점 6자리 까지 출력하기 때문에 마이크로초까지 측정
