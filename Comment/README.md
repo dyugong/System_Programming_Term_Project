@@ -1,4 +1,4 @@
-<h1>Profiling Tool(Strace & Pidstat)</h1>
+Profiling Tool(Strace & Pidstat)
 <h2>
   <ul>
     <li>Strace</li>
