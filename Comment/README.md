@@ -7,3 +7,8 @@
     <h4>pidstat -l & pidstat -r 명령어를 구현</h4>
     <h4>실행 파일의 Cpu 와 Memory 사용량에 대한 정보</h4>
 </ul>
+
+<h2>How to run code</h2>
+
+
+<h2>Environments to be configured</h2>
