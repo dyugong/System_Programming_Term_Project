@@ -8,7 +8,12 @@
     <h4>실행 파일의 Cpu 와 Memory 사용량에 대한 정보</h4>
 </ul>
 
-<h2>How to run code</h2>
+<h2>실행 방법</h2>
 
 
-<h2>Environments to be configured</h2>
+<h2>구현 환경</h2>
+<ul>
+  <h4><li>Ubuntu 18+</li></h4>
+  <h4><li>Language: C</li></h4>
+  <h4><li>IDE: linux terminal</li></h4>
+</ul>
