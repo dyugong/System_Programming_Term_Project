@@ -26,6 +26,12 @@ size of memory portions
 ------------------------------------------------------------------------------
 Strace
 
+waitpid
+waitpid 함수는 인수로 주어진 pid 번호의 자식프로세스가 종료되거나,
+시그널 함수를 호출하는 신호가 전달될때까지 waitpid 호출한 영역에서 일시 중지
+
+WIFEXITED(status) : 자식이 정상적으로 종료되었다면 non-zero
+
 ptrace(PTRACE_TRACEME, 0, NULL, NULL)
 현재 프로세스를 추적 대상으로 설정합니다. 자신의 프로세스를 추적하게 됩니다.
 
