@@ -5,7 +5,7 @@
 double totaltime = 0;     // 총 실행 시간
 int totalerror = 0;       // 총 에러 횟수
 long totalcall = 0;       // 총 시스템 콜 횟수
-long* call;             
+long* call;
 int* errnor;
 double* ptime;
 
@@ -71,9 +71,9 @@ void parent(pid_t pid)
             oops("waitpid()");
 
         // 시작 시간 기록
-        gettimeofday(&start, NULL);   
+        gettimeofday(&start, NULL);
 
-          
+
         if (WIFEXITED(status))    // 자식프로세스가 정상적으로 종료 되었을 때 실행
         {
             printf("%%%5s %11s %11s %9s %9s %s\n", "time", "seconds", "usecs/call", "calls", "errors", "syscall");
@@ -106,7 +106,7 @@ void parent(pid_t pid)
 
         if (ptrace(PTRACE_GETREGS, pid, 0, &regs) == -1)            // 레지스터 값을 regs에 받아옴
             oops("PTRACE_GETREGS");
- 
+
         // 시스템 콜 탐색 성공 시 rax의 초기값 -38
         if ((long)regs.rax == -38)
         {
@@ -115,7 +115,7 @@ void parent(pid_t pid)
         }
         else
         {
-            long code = (long)regs.rax;               
+            long code = (long)regs.rax;
             if (code < 0)    // regs구조체의 rax(결과값)레지스터 값이 음수일 경우 에러
             {
                 int id = (int)regs.orig_rax;   // regs.orig_rax(시스템 콜 번호)
@@ -132,6 +132,7 @@ void parent(pid_t pid)
         totaltime += elapsed_us;
         if (ptrace(PTRACE_SYSCALL, pid, 0, 0) == -1)            // 다음 시스템콜 추적
             oops("PTRACE_SYSCALL");
+    }
 }
 
 char* syscalltostring(long id)         // 시스템 콜 번호 -> 시스템콜(문자열)
