@@ -31,7 +31,7 @@ long long printMemoryUsage(int pid) {
     char statusFilePath[50];                            // Procfile에 접근하여 Path 저장하기 위한 배열
     sprintf(statusFilePath, "/proc/%d/status", pid);    // PID에 대한 status Path를 statusFilePaht에 저장
 
-    int in_fd, n_read;          // 
+    int in_fd, n_read;
     char line[100];             // like buffer
     unsigned long memUsage;     // memory 사용값을 반환하기 위한 함수
 
@@ -39,6 +39,7 @@ long long printMemoryUsage(int pid) {
         perror("open");
         exit(1);
     }
+    // readline 함수를 통해 한 라인만 입력 받게함
     while ((n_read = readline(in_fd, line, sizeof(line))) > 0) {
         // size of memory portions
         if (strncmp(line, "VmRSS:", 6) == 0) {
