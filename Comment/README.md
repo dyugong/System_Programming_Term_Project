@@ -11,7 +11,7 @@
 <h2>실행 방법</h2>
 <ul>
     <h4><li>Finite proces: ./profile [command]</li></h4>
-    <h4><li>Continuous process: ./profile [ommand] => strace 종료 => pidstat 종료</li></h4>
+    <h4><li>Continuous process: ./profile [command] => strace 종료 => pidstat 종료</li></h4>
 </ul>
 <h2>구현 환경</h2>
 <ul>
