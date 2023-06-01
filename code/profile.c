@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-	signal(SIGINT, SIG_IGN);		// SIGINT ¹«½Ã
+	signal(SIGINT, SIG_IGN);		// SIGINT ë¬´ì‹œ
 	int thepipe[PIPE_ENDS], newfd, pid, n_chars;
 	char buf[BUFFERSIZE];
 
@@ -18,8 +18,8 @@ int main(int argc, char** argv)
 	if ((pid = fork()) == -1)
 		oops2("Cannot fork", 2);
 	if (pid == 0) {
-		strace(argc, argv);		// strace ÇÔ¼ö ½ÇÇà(Ãâ·Â °á°ú¸¦ º¸¿©ÁÜ°ú µ¿½Ã¿¡ strace.txt¿¡ ÀúÀå)
-		pidstat(argc, argv);	// pidstat ÇÔ¼ö ½ÇÇà(Ãâ·Â °á°ú¸¦ º¸¿©ÁÜ°ú µ¿½Ã¿¡ pidstat.txt¿¡ ÀúÀå)
+		strace(argc, argv);		// strace í•¨ìˆ˜ ì‹¤í–‰(ì¶œë ¥ ê²°ê³¼ë¥¼ ë³´ì—¬ì¤Œê³¼ ë™ì‹œì— strace.txtì— ì €ìž¥)
+		pidstat(argc, argv);	// pidstat í•¨ìˆ˜ ì‹¤í–‰(ì¶œë ¥ ê²°ê³¼ë¥¼ ë³´ì—¬ì¤Œê³¼ ë™ì‹œì— pidstat.txtì— ì €ìž¥)
 		// child for writing end by using pipe
 		close(thepipe[0]);
 		if (dup2(thepipe[1], 1) == -1)
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		close(thepipe[1]);
 		FILE* sf,*pf;
 
-		// strace.txt¿¡ ´ã°ÜÀÖ´Â ³»¿ë Ãâ·Â
+		// strace.txtì— ë‹´ê²¨ìžˆëŠ” ë‚´ìš© ì¶œë ¥
 		if ((sf = fopen("strace.txt", "r")) == NULL) {
 			perror("no file");
 			exit(1);
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		printf("\n");
 		fclose(sf);
 		
-		// pidstat.txt¿¡ ´ã°ÜÀÖ´Â ³»¿ë Ãâ·Â
+		// pidstat.txtì— ë‹´ê²¨ìžˆëŠ” ë‚´ìš© ì¶œë ¥
 		if ((pf = fopen("pidstat.txt", "r")) == NULL) {
 			perror("no file");
 			exit(1);
@@ -57,11 +57,11 @@ int main(int argc, char** argv)
 			oops2("couldn't redirect stdin", 3);
 		close(thepipe[0]);
 	
-		// result.txt »ý¼º(±ÇÇÑ rw-r--r--)
+		// result.txt ìƒì„±(ê¶Œí•œ rw-r--r--)
 		if ((newfd = creat("result.txt", COPYMODE)) == -1)	
 			oops2("Cannot open ", 1);
 		
-		// child¿¡¼­ Ãâ·ÂÇÑ °á°ú(strace & pidstat Ãâ·Â °á°ú°ª)¸¦ ÀÔ·Â¹Þ¾Æ result.txt¿¡ ¾²±â
+		// childì—ì„œ ì¶œë ¥í•œ ê²°ê³¼(strace & pidstat ì¶œë ¥ ê²°ê³¼ê°’)ë¥¼ ìž…ë ¥ë°›ì•„ result.txtì— ì“°ê¸°
 		while ((n_chars = read(0, buf, BUFFERSIZE)) > 0)	
 			if (write(newfd, buf, n_chars) != n_chars)
 				oops2("write error to", 2);
