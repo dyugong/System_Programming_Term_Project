@@ -9,8 +9,10 @@
 </ul>
 
 <h2>실행 방법</h2>
+<ul>
     <h4>Finite proces: ./profile [command]</h4>
     <h4>Continuous process: ./profile [ommand] => strace 종료 => pidstat 종료</h4>
+</ul>
 <h2>구현 환경</h2>
 <ul>
   <h4><li>Ubuntu 18+</li></h4>
